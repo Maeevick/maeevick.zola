@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Maeevick's Adventures{% endblock %}</title>
+    <link rel="stylesheet" href="{{ get_url(path='css/main.css') }}" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{{ get_url(path='@/_index.md') }}">The Tavern</a></li>
+          <li>
+            <a href="{{ get_url(path='@/quests/_index.md') }}">The Quests</a>
+          </li>
+          <li>
+            <a href="{{ get_url(path='@/codex/_index.md') }}"
+              >The Codex of Chaos</a
+            >
+          </li>
+          <li>
+            <a href="{{ get_url(path='@/lab/_index.md') }}">The Trix's Lab</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <footer>
+      <p>
+        © 2025 Aurel | Maeevick - Tech under MIT - Content under CC BY-NC-SA 4.0
+      </p>
+    </footer>
+  </body>
+</html>
