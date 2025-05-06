@@ -1,4 +1,33 @@
-# 🚧 WORK IN PROGRESS website https://www.maeevick.com rework 🚧
+# 🚧 WORK IN PROGRESS 🚧 website rework https://www.maeevick.com
+
+Welcome to the repository of my personal creative hub! This project aims to build a unique fantasy-steampunk universe and aesthetics, my universe and hobby, with technical experiments, game development and creative writing.
+
+## TL;DR
+
+The website is structured around four main sections:
+
+- **The Tavern** - Home page and general purpose stuff
+- **The Quests** - Games and software products/projects
+- **The Codex of Chaos** - Lore, stories and universe building
+- **The Trix's Lab** - Technical experiments and blog posts (almost failures, I swear!)
+
+This repository contains both the technical implementation of the website and its creative content, each under different licenses.
+
+## 🧪 Trix's Lab (Tech Corner of this Website)
+
+_"Welcome to my lab, fellow tinkerers! This is where I experiment with arcano-technological contraptions powering this very pocket of the ethereal plane you're currently visiting. Some call it 'web development' — I call it 'practical dimensional engineering with minimal explosions!'_
+
+_As any proper apprentice knows, documenting your experiments is crucial — especially the failures. Perhaps EVEN MORE the failures! So here's my ever-expanding catalog of tools and techniques I'm employing in this grand experiment."_
+
+### 🔧 Current Tech Stack Checklist
+
+####
+
+- [x] **Zola** - Static site generator crafted in Rust (v0.20.0) - _"A marvelously efficient contraption that transmutes my markdown scribblings into browser-compatible enchantments! And, as almost all rust-based tools, it rarely explodes, which is always cool."_
+
+### Future Enhancements
+
+_"This is merely the beginning of our arcano-technological journey! I've got plans for integrating HTMX enchantments, WebAssembly constructs, and possibly some mechanical automations with Actix-web... assuming my workshop doesn't catch fire again. For more detailed schematics and technical grimoires about how this site functions, check out my experiment logs [Coming Soon...]_
 
 ## License
 
