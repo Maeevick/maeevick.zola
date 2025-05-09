@@ -1,13 +1,32 @@
-{% extends "base.html" %} {% block title %}{{ section.title }} - Maeevick's
-Realm{% endblock %} {% block content %}
-<h1>{{ section.title }}</h1>
-{{ section.content | safe }} {% if section.pages %}
-<div class="section-pages">
+{% extends "base.html" %}
+
+{% block title %}
+{{ section.title }}{% endblock %}
+{% block content %}
+
+<h1>
+  {{ section.title }}
+</h1>
+
+<div
+  class="intro border-left-{% if current_path is starting_with('/lab') %}secondary{% elif current_path is starting_with('/codex') %}accent{% else %}primary{% endif %}">
+  {{ section.content | safe }}
+</div>
+
+{% if section.pages %}
+<div>
   {% for page in section.pages %}
   <article>
-    <h2><a href="{{ page.permalink }}">{{ page.title }}</a></h2>
-    <p>{{ page.description }}</p>
+    <h2>
+      <a href="{{ page.permalink }}">{{ page.title }}</a>
+    </h2>
+    <p>
+      {{ page.description }}
+    </p>
+    <div class="gradient-divider"></div>
   </article>
   {% endfor %}
 </div>
-{% endif %} {% endblock %}
+{% endif %}
+
+{% endblock %}

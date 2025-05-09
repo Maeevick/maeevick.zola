@@ -1,0 +1,28 @@
+main {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (min-width: $breakpoint-md) {
+    padding: 2rem;
+  }
+}
+
+.border-left-primary {
+  border-left: 3px solid $color-primary;
+}
+
+.border-left-secondary {
+  border-left: 3px solid $color-secondary;
+}
+
+.border-left-accent {
+  border-left: 3px solid $color-accent;
+}
+
+.gradient-divider {
+  height: 2px;
+  width: 6rem;
+  margin-top: 1rem;
+  background: linear-gradient(to right, $color-primary, $color-accent);
+}

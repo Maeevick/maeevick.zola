@@ -1,0 +1,151 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $color-dark;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  height: 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  .logo {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .hook {
+    font-size: 0.75rem;
+    color: $color-light;
+  }
+}
+
+.main-nav {
+  display: flex;
+
+  ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 1.5rem;
+  }
+
+  a {
+    display: block;
+    color: $color-gray-400;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+
+    &:hover,
+    &.active {
+      color: $color-primary;
+      border-bottom: 2px solid $color-primary;
+      text-decoration: none;
+    }
+
+    @media (min-width: $breakpoint-md) {
+      font-size: 1rem;
+    }
+  }
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.hamburger {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  cursor: pointer;
+  display: none;
+
+  span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: $color-light;
+    border-radius: 2px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: 0.25s ease-in-out;
+
+    &:nth-child(1) {
+      top: 6px;
+    }
+
+    &:nth-child(2) {
+      top: 12px;
+    }
+
+    &:nth-child(3) {
+      top: 18px;
+    }
+  }
+}
+
+@media (max-width: ($breakpoint-md - 1)) {
+  .hamburger {
+    display: block;
+  }
+
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: $color-dark;
+    padding: 0 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    border-top: 1px solid $color-gray-600;
+
+    ul {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    a {
+      &:hover,
+      &.active {
+        border-bottom: none;
+        border-left: 2px solid $color-primary;
+        padding-left: 0.5rem;
+      }
+    }
+  }
+
+  .menu-toggle:checked ~ .main-nav {
+    max-height: 300px;
+    padding: 1rem;
+  }
+
+  .menu-toggle:checked ~ .hamburger span {
+    &:nth-child(1) {
+      top: 12px;
+      transform: rotate(135deg);
+    }
+
+    &:nth-child(2) {
+      opacity: 0;
+      left: -60px;
+    }
+
+    &:nth-child(3) {
+      top: 12px;
+      transform: rotate(-135deg);
+    }
+  }
+}

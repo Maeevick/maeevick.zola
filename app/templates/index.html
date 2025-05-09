@@ -1,21 +1,25 @@
-{% extends "base.html" %} {% block title %}The Tavern - Maeevick's Realm{%
-endblock %} {% block content %}
-<h1>The Tavern, where everything always starts</h1>
-<p>
-  Welcome to my creative universe! This is where fantasy, tech experiments, and
-  game development collide.
-</p>
+{% extends "base.html" %}
 
-<section class="hero">
-  <h2>About Me</h2>
-  <p>
-    🧢 Product & Tech Leader by day | 🛠️ Extreme Programmer exploring and
-    tinkering with weird and chaotic stuff by night
-  </p>
+{% block title %}The Tavern, where everything always starts{% endblock %}
+
+{% block content %}
+
+<h1>{{ section.title }}</h1>
+<div class="intro border-left-primary">{{ section.content | safe }}</div>
+
+
+<section class="recent-section">
+  <h2>Recent Adventures</h2>
+  <p>🚧 Stay tuned for updates on my latest experiments! 🚧</p>
+  <div class="gradient-divider"></div>
 </section>
 
-<section class="recent-content">
-  <h2>Recent Adventures</h2>
-  <p>Stay tuned for updates on my latest projects and experiments!</p>
+<section class="hero-section">
+  <h2>About Me <i>(in almost two words)</i></h2>
+  <p>🧢 Product & Tech Leader by day</p>
+  <p>
+    🛠️ Extreme Programmer exploring and tinkering with weird and chaotic stuff by night
+  </p>
+  <div class="gradient-divider"></div>
 </section>
 {% endblock %}
