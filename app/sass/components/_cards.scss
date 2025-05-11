@@ -4,6 +4,7 @@
   border-radius: $border-radius;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease, transform 0.2s ease;
+  min-width: 300ch;
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -15,10 +16,12 @@
   @extend %card-base;
   margin-bottom: 2.5rem;
   border-left: 4px solid $color-secondary;
+  width: 100%;
 }
 
 .recent-section {
   @extend %card-base;
   margin-bottom: 2.5rem;
   border-left: 4px solid $color-accent;
+  width: 100%;
 }
