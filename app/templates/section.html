@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}
-{{ section.title }}{% endblock %}
-{% block content %}
+{% block title %}{{ section.title }}{% endblock %}
 
+{% block description %}{{ section.title }} - {{ section.description }}{% endblock %}
+
+{% block content %}
 <h1>
-  {{ section.title }}
+  {{ section.title }} - <i>{{section.description}}</i>
 </h1>
 
 <div
@@ -28,5 +29,4 @@
   {% endfor %}
 </div>
 {% endif %}
-
 {% endblock %}

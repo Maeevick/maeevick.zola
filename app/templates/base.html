@@ -4,11 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Maeevick's creative universe - fantasy writings, tech learnings, and game dev experiments">
-    <title>{% block title %}{% endblock %}</title>
+
+    <title>{{ config.title }} - {{ section.title }}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+    <meta name="author" content="Aurel | Maeevick">
+    <meta name="keywords" content="creative universe, writing, fantasy, steampunk, programming, tech, software
+        engineering, gamedesign, game development, retro-gaming">
+
+    <link rel="canonical" href="{{ current_url | safe }}">
+
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ current_url | safe }}">
+    <meta property="og:title" content="{% block og_title %}{{ config.title }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ get_url(path='img/og-image.jpg') }}{% endblock %}">
+    <meta property="og:locale"
+        content="{% if page and page.extra.locale %}{{ page.extra.locale }}{% elif section and section.extra.locale %}{{ section.extra.locale }}{% else %}fr_FR{% endif %}">
+    <meta property="og:site_name" content="{{ config.title }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link rel="stylesheet" href="{{ get_url(path='main.css') }}">
     <link rel="icon" href="{{ get_url(path='favicon.ico') }}" type="image/x-icon">
+
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <meta name="theme-color" content="#18181b">
+    <meta name="robots"
+        content="{% block robots %}{% if page and page.extra.robots %}{{ page.extra.robots }}{% elif section and section.extra.robots %}{{ section.extra.robots }}{% else %}index, follow{% endif %}{% endblock %}">
 </head>
 
 <body>

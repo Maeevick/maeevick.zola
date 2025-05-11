@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}The Tavern, where everything always starts{% endblock %}
+{% block title %}{{ section.title }}{% endblock %}
+{% block description %}{{ section.title }} - {{ section.description }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ section.title }}</h1>
+<h1>{{ section.title }} - <i>{{section.description}}</i></h1>
 <div class="intro border-left-primary">{{ section.content | safe }}</div>
 
 
