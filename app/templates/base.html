@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ config.title }} - {{ section.title }}</title>
-    <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+    <title>{{ config.title }} - {% block title %}{{ config.title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ page.description }}{% endblock %}">
     <meta name="author" content="Aurel | Maeevick">
     <meta name="keywords" content="creative universe, writing, fantasy, steampunk, programming, tech, software
         engineering, gamedesign, game development, retro-gaming">
