@@ -32,7 +32,7 @@
 
 <body>
     <header class="header">
-        <a href="{{ get_url(path='@/_index.md') }}" class="brand">
+        <a href="{{ get_url(path='@/_index.md', lang=lang) }}" class="brand">
             <span class="logo">🤪</span>
             <span class="hook">fantasy, tech, gamedev</span>
         </a>
@@ -46,14 +46,15 @@
 
         <nav class="main-nav">
             <ul>
-                <li><a href="{{ get_url(path='@/_index.md') }}" {% if current_path=="/" %}class="active" {% endif %}>The
+                <li><a href="{{ get_url(path='@/_index.md', lang=lang) }}" {% if current_path=="/" or
+                        current_path=="/fr/" %}class="active" {% endif %}>The
                         Tavern</a></li>
-                <li><a href="{{ get_url(path='@/quests/_index.md') }}" {% if current_path is
-                        starting_with("/quests")%}class="active" {% endif %}>The Quests</a></li>
-                <li><a href="{{ get_url(path='@/codex/_index.md') }}" {% if current_path is
-                        starting_with("/codex")%}class="active" {% endif %}>The Codex</a></li>
-                <li><a href="{{ get_url(path='@/lab/_index.md') }}" {% if current_path is
-                        starting_with("/lab")%}class="active" {% endif %}>The Lab</a></li>
+                <li><a href="{{ get_url(path='@/quests/_index.md', lang=lang) }}" {% if current_path=="/quests/" or
+                        current_path=="/fr/quests/" %}class="active" {% endif %}>The Quests</a></li>
+                <li><a href="{{ get_url(path='@/codex/_index.md', lang=lang) }}" {% if current_path=="/codex/" or
+                        current_path=="/fr/codex/" %}class="active" {% endif %}>The Codex</a></li>
+                <li><a href="{{ get_url(path='@/lab/_index.md', lang=lang) }}" {% if current_path=="/lab/" or
+                        current_path=="/fr/lab/" %}class="active" {% endif %}>The Lab</a></li>
             </ul>
         </nav>
     </header>
