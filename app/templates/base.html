@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% if lang %}{{ lang }}{% else %}en{% endif %}">
+
+{% set lang = "en" %}
+{% if current_path is starting_with("/fr") %}
+{% set lang = "fr" %}
+{% endif %}
 
 <head>
     <meta charset="UTF-8">
@@ -32,10 +37,26 @@
 
 <body>
     <header class="header">
-        <a href="{{ get_url(path='@/_index.md', lang=lang) }}" class="brand">
-            <span class="logo">🤪</span>
-            <span class="hook">fantasy, tech, gamedev</span>
-        </a>
+        <div>
+            <a href="{{ get_url(path='@/_index.md', lang=lang) }}" class="brand">
+                <span class="logo">🤪</span>
+                <span class="hook">fantasy, tech, gamedev</span>
+            </a>
+            <div class="lang-switcher">
+                {% set en_path = current_path | replace(from="/fr", to="") | replace(from="//", to="/") %}
+                <a href="{{ get_url(path=en_path, trailing_slash=true) }}" {% if lang=="en" %}class="active" {% endif %}
+                    title="English">
+                    🇺🇸
+                </a>
+
+                {% set clean_path = current_path | replace(from="/fr", to="") %}
+                {% set fr_path = "/fr" ~ clean_path %}
+                <a href="{{ get_url(path=fr_path, trailing_slash=true) }}" {% if lang=="fr" %}class="active" {% endif %}
+                    title="Français">
+                    🇫🇷
+                </a>
+            </div>
+        </div>
 
         <input type="checkbox" id="menu-toggle" class="menu-toggle">
         <label for="menu-toggle" class="hamburger">

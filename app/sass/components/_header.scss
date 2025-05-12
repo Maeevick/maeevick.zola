@@ -24,6 +24,29 @@
   }
 }
 
+.lang-switcher {
+  display: flex;
+  align-items: center;
+
+  a {
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+
+    &:hover,
+    &.active {
+      opacity: 1;
+      border-bottom: none;
+    }
+
+    &.active {
+      pointer-events: none;
+    }
+  }
+}
+
 .main-nav {
   display: flex;
 
