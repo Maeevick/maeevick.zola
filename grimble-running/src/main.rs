@@ -1,3 +1,11 @@
+use bevy::prelude::*;
+
 fn main() {
-    println!("Hello, Grimble!");
+    App::new()
+    .add_systems(Update, hello_system)
+    .run();
+}
+
+fn hello_system() {
+  println!("Hello, Grimble!");
 }
