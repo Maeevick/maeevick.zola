@@ -34,9 +34,21 @@ struct Obstacle;
 #[derive(Resource)]
 struct ObstacleTimer(Timer);
 
+#[derive(Component)]
+struct ScoreText;
+
 fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     clear_color.0 = BACKGROUND_COLOR;
     commands.spawn(Camera2d::default());
+    commands.spawn((
+        Text::new("Score: 0"),
+        TextFont {
+            font_size: 30.0,
+            ..default()
+        },
+        TextColor(Color::BLACK.into()),
+        ScoreText,
+    ));
     commands.spawn((
         Sprite {
             color: Color::linear_rgb(0.1, 0.1, 0.1),
@@ -90,9 +102,20 @@ fn move_grimble(mut query: Query<(&mut Transform, &mut Grimble)>, time: Res<Time
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Grimble>,
-    game_state: Res<GameState>,
+    mut game_state: ResMut<GameState>,
+    mut commands: Commands,
+    obstacles: Query<Entity, With<Obstacle>>,
 ) {
     if !game_state.running {
+        if keyboard_input.just_pressed(KeyCode::KeyR) {
+            game_state.running = true;
+            game_state.score = 0;
+
+            for entity in obstacles.iter() {
+                commands.entity(entity).despawn();
+            }
+        }
+
         return;
     }
 
@@ -107,10 +130,10 @@ fn handle_input(
 }
 
 fn move_obstacles(
+    mut game_state: ResMut<GameState>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Transform), With<Obstacle>>,
     time: Res<Time>,
-    game_state: Res<GameState>,
 ) {
     if !game_state.running {
         return;
@@ -120,7 +143,8 @@ fn move_obstacles(
 
         if transform.translation.x < -WINDOW_WIDTH / 2.0 - OBSTACLE_SIZE {
             commands.entity(entity).despawn();
-            println!("Obstacle deleted !");
+            game_state.score += 1;
+            println!("Obstacle deleted ! Score: {}", game_state.score);
         }
     }
 }
@@ -205,15 +229,13 @@ fn check_collisions(
     }
 }
 
-fn update_score(time: Res<Time>, mut game_state: ResMut<GameState>) {
+fn update_score(game_state: ResMut<GameState>, mut score_query: Query<&mut Text, With<ScoreText>>) {
     if !game_state.running {
         return;
     }
 
-    game_state.score += (10.0 * time.delta_secs()) as u32;
-
-    if game_state.score % 10 == 0 && game_state.score > 0 {
-        println!("Score: {}", game_state.score);
+    if let Ok(mut text) = score_query.single_mut() {
+        text.0 = format!("Score: {}", game_state.score);
     }
 }
 
