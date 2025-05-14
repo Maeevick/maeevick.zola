@@ -38,6 +38,9 @@ struct ObstacleTimer(Timer);
 struct ScoreText;
 
 #[derive(Component)]
+struct SpeedText;
+
+#[derive(Component)]
 struct GameOverText;
 
 fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
@@ -50,8 +53,22 @@ fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
             ..default()
         },
         TextColor(Color::BLACK.into()),
-        Transform::from_xyz(0.0, WINDOW_HEIGHT / 2.0 - 35.0, 10.0),
+        Transform::from_xyz(
+            -WINDOW_WIDTH / 2.0 + 100.0,
+            WINDOW_HEIGHT / 2.0 - 35.0,
+            10.0,
+        ),
         ScoreText,
+    ));
+    commands.spawn((
+        Text2d::new("Speed: 200"),
+        TextFont {
+            font_size: 30.0,
+            ..default()
+        },
+        TextColor(Color::linear_rgb(0.1, 0.1, 1.0)),
+        Transform::from_xyz(WINDOW_WIDTH / 2.0 - 120.0, WINDOW_HEIGHT / 2.0 - 35.0, 10.0),
+        SpeedText,
     ));
 
     commands.spawn((
@@ -154,8 +171,9 @@ fn move_obstacles(
     if !game_state.running {
         return;
     }
+    let current_speed = GAME_SPEED + game_state.score as f32;
     for (entity, mut transform) in query.iter_mut() {
-        transform.translation.x -= GAME_SPEED * time.delta_secs();
+        transform.translation.x -= current_speed * time.delta_secs();
 
         if transform.translation.x < -WINDOW_WIDTH / 2.0 - OBSTACLE_SIZE {
             commands.entity(entity).despawn();
@@ -258,6 +276,19 @@ fn update_score(
     }
 }
 
+fn update_speed(
+    game_state: ResMut<GameState>,
+    mut speed_query: Query<&mut Text2d, With<SpeedText>>,
+) {
+    if !game_state.running {
+        return;
+    }
+
+    if let Ok(mut text) = speed_query.single_mut() {
+        text.0 = format!("Speed: {}", GAME_SPEED as u32 + game_state.score);
+    }
+}
+
 fn toggle_game_over(
     game_state: ResMut<GameState>,
     mut game_over_query: Query<&mut Visibility, With<GameOverText>>,
@@ -299,8 +330,9 @@ fn main() {
                 spawn_obstacles,
                 move_obstacles,
                 check_collisions,
-                update_score,
                 toggle_game_over,
+                update_score,
+                update_speed,
             ),
         )
         .run();
