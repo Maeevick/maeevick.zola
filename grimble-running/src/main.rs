@@ -37,18 +37,36 @@ struct ObstacleTimer(Timer);
 #[derive(Component)]
 struct ScoreText;
 
+#[derive(Component)]
+struct GameOverText;
+
 fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     clear_color.0 = BACKGROUND_COLOR;
     commands.spawn(Camera2d::default());
     commands.spawn((
-        Text::new("Score: 0"),
+        Text2d::new("Score: 0"),
         TextFont {
             font_size: 30.0,
             ..default()
         },
         TextColor(Color::BLACK.into()),
+        Transform::from_xyz(0.0, WINDOW_HEIGHT / 2.0 - 35.0, 10.0),
         ScoreText,
     ));
+
+    commands.spawn((
+        Text2d::new("Game Over!\n(restart by pressing R)"),
+        TextFont {
+            font_size: 30.0,
+            ..default()
+        },
+        TextColor(Color::linear_rgb(1.0, 0.1, 0.1)),
+        TextLayout::new_with_justify(JustifyText::Center),
+        Transform::from_xyz(0.0, 0.0, 10.0),
+        Visibility::Hidden,
+        GameOverText,
+    ));
+
     commands.spawn((
         Sprite {
             color: Color::linear_rgb(0.1, 0.1, 0.1),
@@ -107,7 +125,7 @@ fn handle_input(
     obstacles: Query<Entity, With<Obstacle>>,
 ) {
     if !game_state.running {
-        if keyboard_input.just_pressed(KeyCode::KeyR) {
+        if keyboard_input.pressed(KeyCode::KeyR) {
             game_state.running = true;
             game_state.score = 0;
 
@@ -115,8 +133,6 @@ fn handle_input(
                 commands.entity(entity).despawn();
             }
         }
-
-        return;
     }
 
     for mut grimble in query.iter_mut() {
@@ -229,13 +245,29 @@ fn check_collisions(
     }
 }
 
-fn update_score(game_state: ResMut<GameState>, mut score_query: Query<&mut Text, With<ScoreText>>) {
+fn update_score(
+    game_state: ResMut<GameState>,
+    mut score_query: Query<&mut Text2d, With<ScoreText>>,
+) {
     if !game_state.running {
         return;
     }
 
     if let Ok(mut text) = score_query.single_mut() {
         text.0 = format!("Score: {}", game_state.score);
+    }
+}
+
+fn toggle_game_over(
+    game_state: ResMut<GameState>,
+    mut game_over_query: Query<&mut Visibility, With<GameOverText>>,
+) {
+    if let Ok(mut visibility) = game_over_query.single_mut() {
+        *visibility = if game_state.running {
+            Visibility::Hidden
+        } else {
+            Visibility::Visible
+        };
     }
 }
 
@@ -268,6 +300,7 @@ fn main() {
                 move_obstacles,
                 check_collisions,
                 update_score,
+                toggle_game_over,
             ),
         )
         .run();
