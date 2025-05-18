@@ -3,32 +3,36 @@ name = "grimble-running"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 bevy = "0.16.0"
 rand = "0.9.1"
+wasm-bindgen = "0.2.100"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1.7"
+web-sys = { version = "0.3", features = ["Document", "Window", "Element"] }
+getrandom = { version = "0.3.3", features= ["wasm_js"] }
 
 
 ######### BELOW BEVY ENGINE RECOMMANDATION ###########
-# Enable a small amount of optimization in the dev profile.
+
 [profile.dev]
 opt-level = 1
-# Enable a large amount of optimization in the dev profile for dependencies.
+
 [profile.dev.package."*"]
 opt-level = 3
-# Enable more optimization in the release profile at the cost of compile time.
+
 [profile.release]
-# Compile the entire crate as one unit.
-# Slows compile times, marginal improvements.
 codegen-units = 1
-# Do a second optimization pass over the entire program, including dependencies.
-# Slows compile times, marginal improvements.
 lto = "thin"                                                                                                                    
-# Optimize for size in the wasm-release profile to reduce load times and bandwidth usage on web.
+
 [profile.wasm-release]
-# Default to release profile values.
 inherits = "release"
-# Optimize with size in mind (also try "z", sometimes it is better).
-# Slightly slows compile times, great improvements to file size and runtime performance.
 opt-level = "s"
-# Strip all debugging information from the binary to slightly reduce file size.
+codegen-units = 1
+panic = "abort"
 strip = "debuginfo"

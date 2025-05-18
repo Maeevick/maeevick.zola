@@ -1,10 +1,16 @@
-use bevy::prelude::*;
 use std::time::Duration;
+
+use bevy::prelude::*;
+use wasm_bindgen::prelude::*;
 
 mod game;
 use game::*;
 
-fn main() {
+#[wasm_bindgen]
+pub fn run() {
+    #[cfg(target_arch = "wasm32")]
+    console_error_panic_hook::set_once();
+
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {

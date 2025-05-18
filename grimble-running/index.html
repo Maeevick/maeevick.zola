@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Grimble Running</title>
+</head>
+
+<body>
+    <div id="loading">Loading Grimble Running...</div>
+
+    <script type="module">
+        import init, { run } from './pkg/grimble_running.js';
+
+        async function start() {
+            try {
+                console.log("Initializing WASM...");
+                await init();
+                console.log("WASM initialized, starting game...");
+
+                run();
+
+                console.log("Game started!");
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('loading').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        start();
+    </script>
+</body>
+
+</html>
