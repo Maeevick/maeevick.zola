@@ -18,6 +18,7 @@ pub const JUMP_FORCE: f32 = 400.0;
 
 #[derive(Resource)]
 pub struct GameState {
+    pub starting: bool,
     pub running: bool,
     pub score: u32,
 }
@@ -39,6 +40,9 @@ pub struct ScoreText;
 
 #[derive(Component)]
 pub struct SpeedText;
+
+#[derive(Component)]
+pub struct StartText;
 
 #[derive(Component)]
 pub struct GameOverText;
@@ -72,7 +76,19 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     ));
 
     commands.spawn((
-        Text2d::new("Game Over!\n(restart by pressing R)"),
+        Text2d::new("GRIMBLE RUNNING\nPress SPACE to start"),
+        TextFont {
+            font_size: 30.0,
+            ..default()
+        },
+        TextColor(Color::linear_rgb(0.1, 1.0, 0.1)),
+        TextLayout::new_with_justify(JustifyText::Center),
+        Transform::from_xyz(0.0, 0.0, 10.0),
+        StartText,
+    ));
+
+    commands.spawn((
+        Text2d::new("GAME OVER!\n(restart by pressing R)"),
         TextFont {
             font_size: 30.0,
             ..default()
@@ -141,7 +157,16 @@ pub fn handle_input(
     mut commands: Commands,
     obstacles: Query<Entity, With<Obstacle>>,
 ) {
-    if !game_state.running {
+    if game_state.starting && keyboard_input.just_pressed(KeyCode::Space) {
+        game_state.starting = false;
+        game_state.running = true;
+
+        println!("Let's Go, Grimble!");
+
+        return;
+    }
+
+    if game_state.starting || !game_state.running {
         if keyboard_input.pressed(KeyCode::KeyR) {
             game_state.running = true;
             game_state.score = 0;
@@ -149,11 +174,12 @@ pub fn handle_input(
             for entity in obstacles.iter() {
                 commands.entity(entity).despawn();
             }
+            println!("Here, we go again!");
         }
     }
 
     for mut grimble in query.iter_mut() {
-        if keyboard_input.just_pressed(KeyCode::Space) && grimble.on_ground {
+        if grimble.on_ground && keyboard_input.just_pressed(KeyCode::Space) {
             grimble.velocity.y = JUMP_FORCE;
             grimble.on_ground = false;
 
@@ -168,7 +194,7 @@ pub fn move_obstacles(
     mut query: Query<(Entity, &mut Transform), With<Obstacle>>,
     time: Res<Time>,
 ) {
-    if !game_state.running {
+    if game_state.starting || !game_state.running {
         return;
     }
     let current_speed = GAME_SPEED + game_state.score as f32;
@@ -189,7 +215,7 @@ pub fn spawn_obstacles(
     mut timer: ResMut<ObstacleTimer>,
     game_state: Res<GameState>,
 ) {
-    if !game_state.running {
+    if game_state.starting || !game_state.running {
         return;
     }
 
@@ -228,7 +254,7 @@ pub fn check_collisions(
     obstacle_query: Query<&Transform, With<Obstacle>>,
     mut game_state: ResMut<GameState>,
 ) {
-    if !game_state.running {
+    if game_state.starting || !game_state.running {
         return;
     }
 
@@ -267,7 +293,7 @@ pub fn update_score(
     game_state: ResMut<GameState>,
     mut score_query: Query<&mut Text2d, With<ScoreText>>,
 ) {
-    if !game_state.running {
+    if game_state.starting || !game_state.running {
         return;
     }
 
@@ -280,7 +306,7 @@ pub fn update_speed(
     game_state: ResMut<GameState>,
     mut speed_query: Query<&mut Text2d, With<SpeedText>>,
 ) {
-    if !game_state.running {
+    if game_state.starting || !game_state.running {
         return;
     }
 
@@ -289,12 +315,25 @@ pub fn update_speed(
     }
 }
 
+pub fn toggle_welcome(
+    game_state: ResMut<GameState>,
+    mut game_over_query: Query<&mut Visibility, With<StartText>>,
+) {
+    if let Ok(mut visibility) = game_over_query.single_mut() {
+        *visibility = if game_state.starting {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+}
+
 pub fn toggle_game_over(
     game_state: ResMut<GameState>,
     mut game_over_query: Query<&mut Visibility, With<GameOverText>>,
 ) {
     if let Ok(mut visibility) = game_over_query.single_mut() {
-        *visibility = if game_state.running {
+        *visibility = if game_state.starting || game_state.running {
             Visibility::Hidden
         } else {
             Visibility::Visible

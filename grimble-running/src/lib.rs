@@ -25,7 +25,8 @@ pub fn run() {
             TimerMode::Repeating,
         )))
         .insert_resource(GameState {
-            running: true,
+            starting: true,
+            running: false,
             score: 0,
         })
         .add_systems(Startup, setup)
@@ -38,6 +39,7 @@ pub fn run() {
                 spawn_obstacles,
                 move_obstacles,
                 check_collisions,
+                toggle_welcome,
                 toggle_game_over,
                 update_score,
                 update_speed,
