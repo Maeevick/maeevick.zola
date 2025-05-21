@@ -1,30 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimble Running</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+
+        #loading {
+            position: absolute;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ff6b2c;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div id="loading">Loading Grimble Running...</div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Loading Grimble Running...</div>
+        <div><small>This may take a few seconds...</small></div>
+    </div>
 
     <script type="module">
-        import init, { run } from './pkg/grimble_running.js';
+        import init, { run } from './grimble_running.js';
 
         async function start() {
             try {
-                console.log("Initializing WASM...");
+                console.info("Initializing WASM...");
                 await init();
-                console.log("WASM initialized, starting game...");
+                console.info("WASM initialized, starting game...");
 
                 run();
 
-                console.log("Game started!");
                 document.getElementById('loading').style.display = 'none';
             } catch (error) {
                 console.error("Error:", error);
-                document.getElementById('loading').textContent = 'Error: ' + error.message;
+                document.getElementById('loading').innerHTML = `
+                    <div>Error loading game:</div>
+                    <div style="color: #ff6b2c;">${error.message}</div>
+                    <div><small>Please try again later</small></div>
+                `;
             }
         }
 
