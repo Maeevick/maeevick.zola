@@ -1,4 +1,4 @@
-name: Build & Deploy Grimble Running Mini Game
+name: Build and Deploy Grimble Running Mini Game
 
 on:
   push:

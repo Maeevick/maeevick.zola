@@ -1,5 +1,8 @@
 # Grimble Running
 
+![Build Status](https://github.com/Maeevick/maeevick.github.io/workflows/Build%20and%20Deploy%20Grimble%20Running%20Mini%20Game/badge.svg)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+
 _An arcano-technological contraption to gently tease our dear Library Assistant on his non-anniversary_
 
 ---
@@ -10,38 +13,52 @@ Well, well, well... You know how our beloved Grimble gets when he's organizing b
 
 I thought: "What if we could recreate this thrilling daily routine in a more... controlled environment?"
 
-So here we are! Grimble Running - a delightfully simple jumping game that perfectly captures our favorite goblin's extraordinary talent for avoiding obstacles (mostly my fault, to be honest) while going about his very serious book-sorting business.
+So here we are! Grimble Running - a delightfully simple jumping game that perfectly captures our favorite goblin's extraordinary talent for avoiding obstacles (mostly the Trix's fault, to be honest) while going about his very serious book-sorting business.
 
 _Note: No actual goblins were harmed in the making of this game. Though Grimble did mutter something about "unnecessary digital representations of perfectly normal library activities" when he saw it._
 
 _Note 2: It's literally inspired by 'A Life of a Dinosaur in a Web' (Google Chrome)_
 
-## 🎮 What It Does
+## 🎮 Gameplay
 
-- **Simple Controls**: Press SPACE to jump over obstacles (just like dodging my failed contraptions!)
-- **Progressive Difficulty**: The faster you go, the more it resembles a typical day in the lab
-- **Score System**: Count how many obstacles you avoid (Grimble's personal record is still classified)
-- **Game Over & Restart**: Because even Grimble needs a break sometimes (Press R to try again)
+[Play Now on the Website!](https://www.maeevick.com/quests/grimble-running/)
 
-## 🧹 Technical Sorcery
+**The Goal:** Help Grimble navigate through his daily obstacle course cleaning his library.
 
-Built with **Rust** and **Bevy Engine**, then transmuted into **WebAssembly** for maximum portability across the ethereal planes (and web browsers).
+**Simple Controls**:
+I've kept the controls refreshingly simple because, let's face it, Grimble has enough complexity in his filing systems. No need to overwhelm the poor fellow with a 47-button gaming peripheral.
+
+- Press SPACE to jump over obstacles (just like dodging my failed contraptions!)
+- Press R to reset after gravity inevitably wins (also known as "restart after game over")
+
+**Progressive Difficulty**: The faster you go, the more it resembles a typical day in the lab
+
+**Score System**: Count how many obstacles you avoid (_Grimble's personal record is still classified_)
+
+**Current Limitations:**
+
+- Requires a keyboard (specifically the space key) - touch controls coming soon!
+- Mouse users are welcome to watch in supportive silence
+
+## 🛠️ Technical Sorcery
 
 _"It's not magic, it's just sufficiently advanced engineering that looks like magic to people who don't read enough technical grimoires."_ - Trix
 
-## 🛠️ Development Commands
+Built with **Rust** and **Bevy Engine**, then transmuted into **WebAssembly** for maximum portability across the ethereal planes (and web browsers).
 
-### Prerequisites
+### 🤓 Development Commands
+
+#### Prerequisites
 
 Make sure you have the Rust toolchain installed, then add the WASM target:
 
 ```bash
 rustup target add wasm32-unknown-unknown
 cargo install wasm-bindgen-cli
-cargo install basic-http-server  # for serving locally
+cargo install basic-http-server  # for serving locally (it can be any http server)
 ```
 
-### Development (Native)
+#### Development (Native)
 
 For rapid iteration and testing:
 
@@ -49,12 +66,11 @@ For rapid iteration and testing:
 # Run the game natively (fastest for development)
 cargo run # or make run
 
-
 # Build for native platforms
 cargo build --release # or make release
 ```
 
-### WebAssembly Build
+#### WebAssembly Build
 
 For web deployment:
 
@@ -65,7 +81,7 @@ cargo build --target wasm32-unknown-unknown --profile wasm-release
 # Generate JavaScript bindings
 wasm-bindgen --target web --no-typescript --out-dir ./pkg --out-name grimble_running ./target/wasm32-unknown-unknown/release/grimble_running.wasm
 
-# or (both in)
+# or (both in one command)
 make wasm-release
 
 # Serve locally for testing
@@ -73,9 +89,14 @@ basic-http-server .
 # Then open http://127.0.0.1:4000
 ```
 
-_Warning: The current WASM bundle is... let's say "generously sized" (~45MB) for such a simple game. I'm working on convincing Bevy to be less enthusiastic about including every possible feature. Future optimizations planned!_
+**Warning**: The current WASM bundle is... let's say "generously sized" (~45MB) for such a simple game. I'm working on convincing Bevy to be less enthusiastic about including every possible feature. Future optimizations planned!
 
-### Project Structure
+**Development Integration:**
+This project automatically deploys via GitHub Actions to Scaleway Object Storage and integrates seamlessly with the main website.
+
+For more technical details on this automated sorcery or other technical stuff, visit [The Trix's Lab](https://www.maeevick.com/lab/) (you may take a look at the GitHub Action's workflow too).
+
+#### Project Structure
 
 ```
 grimble-running/
@@ -83,31 +104,51 @@ grimble-running/
 │   └── config.toml          # WASM build configuration
 ├── src/
 │   ├── main.rs              # Native entry point
-│   └── lib.rs               # WASM entry point
-│   ├── game.rs              # Game logic
+│   ├── lib.rs               # WASM entry point
+│   └── game.rs              # Game logic
 ├── pkg/                     # Generated WASM files
-├── index.html               # Demo page
-└── Cargo.toml               # Dependencies and build config
-└── Makefile                 # The Magician
+├── index.html               # Game interface
+├── Cargo.toml               # Dependencies and build config
+└── Makefile                 # Build automation (a.k.a. The Magician)
 ```
 
-## 📦 Features
+### 📦 Features
 
 - [x] Grimble _(a sophisticated gray square)_
 - [x] Obstacles _(equally sophisticated gray - not the same - rectangles)_
 - [x] Gravity simulation _(because physics matters!)_
-- [x] Score tracking _(for competitive race organizing)_
+- [x] Score tracking _(for competitive party organizing)_
 - [x] Progressive speed increase _(like a day getting progressively more chaotic)_
 - [x] Game over screen _(for when even Grimble can't keep up)_
 - [x] WebAssembly support _(for universal goblin accessibility)_
+- [x] Automated CI/CD deployment _(because manual deployment is so pre-digital age)_
 
-## 🎯 Future Improvements
+### 🎯 Future Improvements
 
 - [ ] More sophisticated sprites _(maybe Grimble could look like... a slightly better gray square?)_
+- [ ] Touch controls _(for mobile goblin management)_
 - [ ] Sound effects _(the gentle **thud** of books being properly shelved)_
 - [ ] Background scenery _(the Great Library, obviously...or not)_
 - [ ] Different obstacle types _(flying books, unstable experiments, etc.)_
 - [ ] High score persistence _(for Grimble's competitive streak)_
+
+## 👋 Contributing (Or: How to Get Immortalized in Grimble's Chronicles)
+
+_"While I appreciate the enthusiasm for improving my... representation in digital form, I must remind potential contributors that this is a rather personal project reflecting someone's peculiar interpretation of my daily routine."_ - Grimble
+
+**🚧 Under Construction 🚧**
+
+_"My contribution guidelines are currently being compiled in triplicate, with proper cross-references and color-coded annotations. This process requires approximately 47 different forms and may take some time."_
+
+### Current Process
+
+1. **Bug Reports** - If you spot a glitch in my humble-stupid-tiny-game, please document it properly
+2. **Feature Suggestions** - Ideas welcome, though I reserve the right to file them under "Interesting but Impractical"
+3. **Discussion** - Open an issue for civilized discourse
+
+For everything above, open an issue it's the simplest way
+
+**Successful contributors will be commemorated in the [Codex of Chaos](https://www.maeevick.com/codex/)** alongside other notable figures and curiosities!
 
 ## 📝 License
 
@@ -121,6 +162,11 @@ _Translation: Feel free to use this code to create your own academic procrastina
 - **The Bevy Community** - For making game development in Rust surprisingly non-explosive
 - **The Rust Team** - For creating a language that rarely causes laboratory fires
 - **WebAssembly** - For proving that magic is just science we haven't explained yet
+- **GitHub Actions** - For automating deployment so I can focus on more important explosions
+  - actions-rust-lang/setup-rust-toolchain
+  - Swatinem/rust-cache
+  - taiki-e/install-action
+- **Scaleway Object Storage** - For keeping my creations in the cloud
 
 ---
 
