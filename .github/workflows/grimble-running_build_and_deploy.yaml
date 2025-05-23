@@ -1,0 +1,62 @@
+name: Build & Deploy Grimble Running Mini Game
+
+on:
+  push:
+    paths:
+      - "grimble-running/**"
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: grimble-running
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: grimble-running
+
+      - name: Install wasm-bindgen-cli
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-bindgen-cli
+
+      - name: Build WASM
+        env:
+          RUSTFLAGS: '--cfg getrandom_backend="wasm_js"'
+        run: make wasm-release
+
+      - name: Upload to Scaleway Object Storage
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+          AWS_DEFAULT_REGION: fr-par
+        run: |
+          aws s3 cp pkg/grimble_running.js s3://grimble-running/pkg/ \
+            --content-type "application/javascript" \
+            --acl public-read \
+            --endpoint-url https://s3.fr-par.scw.cloud
+            
+          aws s3 cp pkg/grimble_running_bg.wasm s3://grimble-running/pkg/ \
+            --content-type "application/wasm" \
+            --acl public-read \
+            --endpoint-url https://s3.fr-par.scw.cloud
+            
+          aws s3 cp index.html s3://grimble-running/ \
+            --content-type "text/html" \
+            --acl public-read \
+            --endpoint-url https://s3.fr-par.scw.cloud
