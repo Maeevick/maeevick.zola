@@ -16,7 +16,6 @@ pub fn run() {
             primary_window: Some(Window {
                 title: "Grimble Running".into(),
                 resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
-                fit_canvas_to_parent: true,
                 canvas: Some("#game-canvas".to_string()),
                 present_mode: PresentMode::AutoVsync,
                 ..default()

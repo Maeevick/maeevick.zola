@@ -56,11 +56,12 @@
         <div><small>This may take a few seconds...</small></div>
     </div>
 
-    <script type="module">
-        import init, { run } from './grimble_running.js';
+    <canvas id="game-canvas" width="600" height="200"></canvas>
 
+    <script type="module">
         async function start() {
             try {
+                const { default: init, run } = await import(`./pkg/grimble_running.js`);
                 console.info("Initializing WASM...");
                 await init();
                 console.info("WASM initialized, starting game...");
