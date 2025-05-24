@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{input::touch::TouchPhase, prelude::*};
 use rand::Rng;
 use std::time::Duration;
 
@@ -76,9 +76,9 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     ));
 
     commands.spawn((
-        Text2d::new("GRIMBLE RUNNING\nPress SPACE to start"),
+        Text2d::new("GRIMBLE RUNNING\nPress SPACE to start or clic/touch"),
         TextFont {
-            font_size: 30.0,
+            font_size: 20.0,
             ..default()
         },
         TextColor(Color::linear_rgb(0.1, 1.0, 0.1)),
@@ -88,9 +88,9 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     ));
 
     commands.spawn((
-        Text2d::new("GAME OVER!\n(restart by pressing R)"),
+        Text2d::new("GAME OVER!\n(restart by pressing R or clic/touch)"),
         TextFont {
-            font_size: 30.0,
+            font_size: 20.0,
             ..default()
         },
         TextColor(Color::linear_rgb(1.0, 0.1, 0.1)),
@@ -152,12 +152,31 @@ pub fn move_grimble(mut query: Query<(&mut Transform, &mut Grimble)>, time: Res<
 
 pub fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    mouse_input: Res<ButtonInput<MouseButton>>,
+    mut touch_events: EventReader<TouchInput>,
     mut query: Query<&mut Grimble>,
     mut game_state: ResMut<GameState>,
     mut commands: Commands,
     obstacles: Query<Entity, With<Obstacle>>,
 ) {
-    if game_state.starting && keyboard_input.just_pressed(KeyCode::Space) {
+    let is_click_or_touch = mouse_input.just_pressed(MouseButton::Left)
+        || touch_events
+            .read()
+            .any(|touch| matches!(touch.phase, TouchPhase::Started));
+
+    if (game_state.starting || !game_state.running)
+        && (keyboard_input.pressed(KeyCode::KeyR) || is_click_or_touch)
+    {
+        game_state.running = true;
+        game_state.score = 0;
+
+        for entity in obstacles.iter() {
+            commands.entity(entity).despawn();
+        }
+        println!("Here, we go again!");
+    }
+
+    if game_state.starting && (keyboard_input.pressed(KeyCode::Space) || is_click_or_touch) {
         game_state.starting = false;
         game_state.running = true;
 
@@ -166,20 +185,8 @@ pub fn handle_input(
         return;
     }
 
-    if game_state.starting || !game_state.running {
-        if keyboard_input.pressed(KeyCode::KeyR) {
-            game_state.running = true;
-            game_state.score = 0;
-
-            for entity in obstacles.iter() {
-                commands.entity(entity).despawn();
-            }
-            println!("Here, we go again!");
-        }
-    }
-
     for mut grimble in query.iter_mut() {
-        if grimble.on_ground && keyboard_input.just_pressed(KeyCode::Space) {
+        if grimble.on_ground && (keyboard_input.just_pressed(KeyCode::Space) || is_click_or_touch) {
             grimble.velocity.y = JUMP_FORCE;
             grimble.on_ground = false;
 
