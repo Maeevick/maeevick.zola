@@ -16,11 +16,69 @@ pub const GRAVITY: f32 = 980.0;
 pub const GRIMBLE_SIZE: f32 = 50.0;
 pub const JUMP_FORCE: f32 = 400.0;
 
+const START_BUTTON_COLOR: Color = Color::linear_rgb(0.89, 0.13, 0.74);
+const START_BUTTON_HOVER: Color = Color::linear_rgb(0.71, 0.09, 0.58);
+
+const RESTART_BUTTON_COLOR: Color = Color::linear_rgb(0.0, 0.63, 0.87);
+const RESTART_BUTTON_HOVER: Color = Color::linear_rgb(0.10, 0.76, 1.0);
+
+const JUMP_PROTECTION_FRAMES: u8 = 3;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum GamePhase {
+    Menu,
+    Running,
+    GameOver,
+}
+
 #[derive(Resource)]
 pub struct GameState {
-    pub starting: bool,
-    pub running: bool,
+    pub phase: GamePhase,
     pub score: u32,
+    pub prevent_jump_frames: u8,
+}
+
+impl GameState {
+    pub fn new() -> Self {
+        Self {
+            phase: GamePhase::Menu,
+            score: 0,
+            prevent_jump_frames: 0,
+        }
+    }
+
+    pub fn is_menu(&self) -> bool {
+        self.phase == GamePhase::Menu
+    }
+
+    pub fn is_running(&self) -> bool {
+        self.phase == GamePhase::Running && self.prevent_jump_frames == 0
+    }
+
+    pub fn is_game_over(&self) -> bool {
+        self.phase == GamePhase::GameOver
+    }
+
+    pub fn start_game(&mut self) {
+        self.phase = GamePhase::Running;
+        self.prevent_jump_frames = JUMP_PROTECTION_FRAMES;
+    }
+
+    pub fn game_over(&mut self) {
+        self.phase = GamePhase::GameOver;
+    }
+
+    pub fn restart_game(&mut self) {
+        self.phase = GamePhase::Running;
+        self.score = 0;
+        self.prevent_jump_frames = JUMP_PROTECTION_FRAMES;
+    }
+
+    pub fn tick_frame(&mut self) {
+        if self.prevent_jump_frames > 0 {
+            self.prevent_jump_frames -= 1;
+        }
+    }
 }
 
 #[derive(Component)]
@@ -42,10 +100,10 @@ pub struct ScoreText;
 pub struct SpeedText;
 
 #[derive(Component)]
-pub struct StartText;
+pub struct StartButton;
 
 #[derive(Component)]
-pub struct GameOverText;
+pub struct RestartButton;
 
 pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     clear_color.0 = BACKGROUND_COLOR;
@@ -53,52 +111,94 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     commands.spawn((
         Text2d::new("Score: 0"),
         TextFont {
-            font_size: 30.0,
+            font_size: 20.0,
             ..default()
         },
-        TextColor(Color::BLACK.into()),
-        Transform::from_xyz(
-            -WINDOW_WIDTH / 2.0 + 100.0,
-            WINDOW_HEIGHT / 2.0 - 35.0,
-            10.0,
-        ),
+        TextColor(Color::linear_rgb(0.89, 0.13, 0.74)),
+        Transform::from_xyz(-WINDOW_WIDTH / 2.0 + 60.0, WINDOW_HEIGHT / 2.0 - 15.0, 10.0),
         ScoreText,
     ));
     commands.spawn((
         Text2d::new("Speed: 200"),
         TextFont {
-            font_size: 30.0,
+            font_size: 15.0,
             ..default()
         },
-        TextColor(Color::linear_rgb(0.1, 0.1, 1.0)),
-        Transform::from_xyz(WINDOW_WIDTH / 2.0 - 120.0, WINDOW_HEIGHT / 2.0 - 35.0, 10.0),
+        TextColor(Color::linear_rgb(0.0, 0.63, 0.87)),
+        Transform::from_xyz(-WINDOW_WIDTH / 2.0 + 60.0, WINDOW_HEIGHT / 2.0 - 35.0, 10.0),
         SpeedText,
     ));
 
-    commands.spawn((
-        Text2d::new("GRIMBLE RUNNING\nPress SPACE to start or clic/touch"),
-        TextFont {
-            font_size: 20.0,
-            ..default()
-        },
-        TextColor(Color::linear_rgb(0.1, 1.0, 0.1)),
-        TextLayout::new_with_justify(JustifyText::Center),
-        Transform::from_xyz(0.0, 0.0, 10.0),
-        StartText,
-    ));
-
-    commands.spawn((
-        Text2d::new("GAME OVER!\n(restart by pressing R or clic/touch)"),
-        TextFont {
-            font_size: 20.0,
-            ..default()
-        },
-        TextColor(Color::linear_rgb(1.0, 0.1, 0.1)),
-        TextLayout::new_with_justify(JustifyText::Center),
-        Transform::from_xyz(0.0, 0.0, 10.0),
-        Visibility::Hidden,
-        GameOverText,
-    ));
+    commands
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                position_type: PositionType::Absolute,
+                ..default()
+            },
+            BackgroundColor(Color::NONE),
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(280.0),
+                        height: Val::Px(80.0),
+                        border: UiRect::all(Val::Px(3.0)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        display: Display::Flex,
+                        ..default()
+                    },
+                    BorderColor(Color::WHITE),
+                    BorderRadius::all(Val::Px(8.0)),
+                    BackgroundColor(START_BUTTON_COLOR),
+                    StartButton,
+                ))
+                .with_children(|button| {
+                    button.spawn((
+                        Text::new("START RUNNING\nGambare Grimble!"),
+                        TextFont {
+                            font_size: 20.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                        TextLayout::new_with_justify(JustifyText::Center),
+                    ));
+                });
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(280.0),
+                        height: Val::Px(80.0),
+                        border: UiRect::all(Val::Px(3.0)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        display: Display::None,
+                        ..default()
+                    },
+                    BorderColor(Color::WHITE),
+                    BorderRadius::all(Val::Px(8.0)),
+                    BackgroundColor(RESTART_BUTTON_COLOR),
+                    RestartButton,
+                ))
+                .with_children(|button| {
+                    button.spawn((
+                        Text::new("GAME OVER\nrestart\n(at your own risk)"),
+                        TextFont {
+                            font_size: 18.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                        TextLayout::new_with_justify(JustifyText::Center),
+                    ));
+                });
+        });
 
     commands.spawn((
         Sprite {
@@ -131,6 +231,90 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     println!("Hello, Grimble! Are you reading for running?");
 }
 
+pub fn toggle_start_button(
+    game_state: Res<GameState>,
+    mut button_query: Query<&mut Node, With<StartButton>>,
+) {
+    for mut style in button_query.iter_mut() {
+        style.display = if game_state.is_menu() {
+            Display::Flex
+        } else {
+            Display::None
+        };
+    }
+}
+
+pub fn toggle_restart_button(
+    game_state: Res<GameState>,
+    mut button_query: Query<&mut Node, With<RestartButton>>,
+) {
+    for mut style in button_query.iter_mut() {
+        style.display = if game_state.is_game_over() {
+            Display::Flex
+        } else {
+            Display::None
+        };
+    }
+}
+
+pub fn handle_button_interactions(
+    start_interactions: Query<
+        &Interaction,
+        (Changed<Interaction>, With<Button>, With<StartButton>),
+    >,
+    restart_interactions: Query<
+        &Interaction,
+        (Changed<Interaction>, With<Button>, With<RestartButton>),
+    >,
+    mut game_state: ResMut<GameState>,
+    mut commands: Commands,
+    obstacles: Query<Entity, With<Obstacle>>,
+) {
+    for interaction in &start_interactions {
+        if *interaction == Interaction::Pressed && game_state.is_menu() {
+            game_state.start_game();
+            println!("Let's Go, Grimble! (Button clicked)");
+        }
+    }
+
+    for interaction in &restart_interactions {
+        if *interaction == Interaction::Pressed && game_state.is_game_over() {
+            for entity in obstacles.iter() {
+                commands.entity(entity).despawn();
+            }
+            game_state.restart_game();
+            println!("Here, we go again! (Button clicked)");
+        }
+    }
+}
+
+pub fn button_visual_feedback(
+    mut start_buttons: Query<
+        (&Interaction, &mut BackgroundColor),
+        (With<Button>, With<StartButton>),
+    >,
+    mut restart_buttons: Query<
+        (&Interaction, &mut BackgroundColor),
+        (With<Button>, With<RestartButton>, Without<StartButton>),
+    >,
+) {
+    for (interaction, mut color) in &mut start_buttons {
+        *color = match *interaction {
+            Interaction::Pressed => START_BUTTON_COLOR.into(),
+            Interaction::None => START_BUTTON_COLOR.into(),
+            Interaction::Hovered => START_BUTTON_HOVER.into(),
+        };
+    }
+
+    for (interaction, mut color) in &mut restart_buttons {
+        *color = match *interaction {
+            Interaction::Pressed => RESTART_BUTTON_COLOR.into(),
+            Interaction::None => RESTART_BUTTON_COLOR.into(),
+            Interaction::Hovered => RESTART_BUTTON_HOVER.into(),
+        };
+    }
+}
+
 pub fn apply_gravity(mut query: Query<&mut Grimble>, time: Res<Time>) {
     for mut grimble in query.iter_mut() {
         grimble.velocity.y -= GRAVITY * time.delta_secs();
@@ -155,38 +339,19 @@ pub fn handle_input(
     mouse_input: Res<ButtonInput<MouseButton>>,
     mut touch_events: EventReader<TouchInput>,
     mut query: Query<&mut Grimble>,
-    mut game_state: ResMut<GameState>,
-    mut commands: Commands,
-    obstacles: Query<Entity, With<Obstacle>>,
+    game_state: Res<GameState>,
 ) {
-    let is_click_or_touch = mouse_input.just_pressed(MouseButton::Left)
+    if !game_state.is_running() {
+        return;
+    }
+    let should_jump = keyboard_input.just_pressed(KeyCode::Space)
+        || mouse_input.just_pressed(MouseButton::Left)
         || touch_events
             .read()
             .any(|touch| matches!(touch.phase, TouchPhase::Started));
 
-    if (game_state.starting || !game_state.running)
-        && (keyboard_input.pressed(KeyCode::KeyR) || is_click_or_touch)
-    {
-        game_state.running = true;
-        game_state.score = 0;
-
-        for entity in obstacles.iter() {
-            commands.entity(entity).despawn();
-        }
-        println!("Here, we go again!");
-    }
-
-    if game_state.starting && (keyboard_input.pressed(KeyCode::Space) || is_click_or_touch) {
-        game_state.starting = false;
-        game_state.running = true;
-
-        println!("Let's Go, Grimble!");
-
-        return;
-    }
-
     for mut grimble in query.iter_mut() {
-        if grimble.on_ground && (keyboard_input.just_pressed(KeyCode::Space) || is_click_or_touch) {
+        if grimble.on_ground && should_jump {
             grimble.velocity.y = JUMP_FORCE;
             grimble.on_ground = false;
 
@@ -201,7 +366,7 @@ pub fn move_obstacles(
     mut query: Query<(Entity, &mut Transform), With<Obstacle>>,
     time: Res<Time>,
 ) {
-    if game_state.starting || !game_state.running {
+    if !game_state.is_running() {
         return;
     }
     let current_speed = GAME_SPEED + game_state.score as f32;
@@ -222,7 +387,7 @@ pub fn spawn_obstacles(
     mut timer: ResMut<ObstacleTimer>,
     game_state: Res<GameState>,
 ) {
-    if game_state.starting || !game_state.running {
+    if !game_state.is_running() {
         return;
     }
 
@@ -261,7 +426,7 @@ pub fn check_collisions(
     obstacle_query: Query<&Transform, With<Obstacle>>,
     mut game_state: ResMut<GameState>,
 ) {
-    if game_state.starting || !game_state.running {
+    if !game_state.is_running() {
         return;
     }
 
@@ -290,8 +455,8 @@ pub fn check_collisions(
             && grimble_max_y > obstacle_min_y
             && grimble_min_y < obstacle_max_y
         {
-            game_state.running = false;
-            println!("You loose! Game Over! You score is: {}", game_state.score);
+            game_state.game_over();
+            println!("You lose! Game Over! You score is: {}", game_state.score);
         }
     }
 }
@@ -300,7 +465,7 @@ pub fn update_score(
     game_state: ResMut<GameState>,
     mut score_query: Query<&mut Text2d, With<ScoreText>>,
 ) {
-    if game_state.starting || !game_state.running {
+    if !game_state.is_running() {
         return;
     }
 
@@ -313,7 +478,7 @@ pub fn update_speed(
     game_state: ResMut<GameState>,
     mut speed_query: Query<&mut Text2d, With<SpeedText>>,
 ) {
-    if game_state.starting || !game_state.running {
+    if !game_state.is_running() {
         return;
     }
 
@@ -322,28 +487,6 @@ pub fn update_speed(
     }
 }
 
-pub fn toggle_welcome(
-    game_state: ResMut<GameState>,
-    mut game_over_query: Query<&mut Visibility, With<StartText>>,
-) {
-    if let Ok(mut visibility) = game_over_query.single_mut() {
-        *visibility = if game_state.starting {
-            Visibility::Visible
-        } else {
-            Visibility::Hidden
-        };
-    }
-}
-
-pub fn toggle_game_over(
-    game_state: ResMut<GameState>,
-    mut game_over_query: Query<&mut Visibility, With<GameOverText>>,
-) {
-    if let Ok(mut visibility) = game_over_query.single_mut() {
-        *visibility = if game_state.starting || game_state.running {
-            Visibility::Hidden
-        } else {
-            Visibility::Visible
-        };
-    }
+pub fn tick_game_state(mut game_state: ResMut<GameState>) {
+    game_state.tick_frame();
 }
