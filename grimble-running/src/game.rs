@@ -1,4 +1,4 @@
-use bevy::{input::touch::TouchPhase, prelude::*};
+use bevy::{input::touch::TouchPhase, prelude::*, window::PresentMode};
 use rand::Rng;
 use std::time::Duration;
 
@@ -105,7 +105,7 @@ pub struct StartButton;
 #[derive(Component)]
 pub struct RestartButton;
 
-pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
+fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     clear_color.0 = BACKGROUND_COLOR;
     commands.spawn(Camera2d::default());
     commands.spawn((
@@ -231,7 +231,7 @@ pub fn setup(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
     println!("Hello, Grimble! Are you reading for running?");
 }
 
-pub fn toggle_start_button(
+fn toggle_start_button(
     game_state: Res<GameState>,
     mut button_query: Query<&mut Node, With<StartButton>>,
 ) {
@@ -244,7 +244,7 @@ pub fn toggle_start_button(
     }
 }
 
-pub fn toggle_restart_button(
+fn toggle_restart_button(
     game_state: Res<GameState>,
     mut button_query: Query<&mut Node, With<RestartButton>>,
 ) {
@@ -257,7 +257,7 @@ pub fn toggle_restart_button(
     }
 }
 
-pub fn handle_button_interactions(
+fn handle_button_interactions(
     start_interactions: Query<
         &Interaction,
         (Changed<Interaction>, With<Button>, With<StartButton>),
@@ -288,7 +288,7 @@ pub fn handle_button_interactions(
     }
 }
 
-pub fn button_visual_feedback(
+fn button_visual_feedback(
     mut start_buttons: Query<
         (&Interaction, &mut BackgroundColor),
         (With<Button>, With<StartButton>),
@@ -315,13 +315,13 @@ pub fn button_visual_feedback(
     }
 }
 
-pub fn apply_gravity(mut query: Query<&mut Grimble>, time: Res<Time>) {
+fn apply_gravity(mut query: Query<&mut Grimble>, time: Res<Time>) {
     for mut grimble in query.iter_mut() {
         grimble.velocity.y -= GRAVITY * time.delta_secs();
     }
 }
 
-pub fn move_grimble(mut query: Query<(&mut Transform, &mut Grimble)>, time: Res<Time>) {
+fn move_grimble(mut query: Query<(&mut Transform, &mut Grimble)>, time: Res<Time>) {
     for (mut transform, mut grimble) in query.iter_mut() {
         transform.translation.y += grimble.velocity.y * time.delta_secs();
 
@@ -334,7 +334,7 @@ pub fn move_grimble(mut query: Query<(&mut Transform, &mut Grimble)>, time: Res<
     }
 }
 
-pub fn handle_input(
+fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mouse_input: Res<ButtonInput<MouseButton>>,
     mut touch_events: EventReader<TouchInput>,
@@ -360,7 +360,7 @@ pub fn handle_input(
     }
 }
 
-pub fn move_obstacles(
+fn move_obstacles(
     mut game_state: ResMut<GameState>,
     mut commands: Commands,
     mut query: Query<(Entity, &mut Transform), With<Obstacle>>,
@@ -381,7 +381,7 @@ pub fn move_obstacles(
     }
 }
 
-pub fn spawn_obstacles(
+fn spawn_obstacles(
     mut commands: Commands,
     time: Res<Time>,
     mut timer: ResMut<ObstacleTimer>,
@@ -390,7 +390,6 @@ pub fn spawn_obstacles(
     if !game_state.is_running() {
         return;
     }
-
     if timer.0.tick(time.delta()).just_finished() {
         let mut rng = rand::rng();
         let random_width = rng.random_range(0.5..=1.5) * OBSTACLE_SIZE;
@@ -421,7 +420,7 @@ pub fn spawn_obstacles(
     }
 }
 
-pub fn check_collisions(
+fn check_collisions(
     grimble_query: Query<&Transform, With<Grimble>>,
     obstacle_query: Query<&Transform, With<Obstacle>>,
     mut game_state: ResMut<GameState>,
@@ -461,7 +460,7 @@ pub fn check_collisions(
     }
 }
 
-pub fn update_score(
+fn update_score(
     game_state: ResMut<GameState>,
     mut score_query: Query<&mut Text2d, With<ScoreText>>,
 ) {
@@ -474,7 +473,7 @@ pub fn update_score(
     }
 }
 
-pub fn update_speed(
+fn update_speed(
     game_state: ResMut<GameState>,
     mut speed_query: Query<&mut Text2d, With<SpeedText>>,
 ) {
@@ -487,6 +486,55 @@ pub fn update_speed(
     }
 }
 
-pub fn tick_game_state(mut game_state: ResMut<GameState>) {
+fn tick_game_state(mut game_state: ResMut<GameState>) {
     game_state.tick_frame();
+}
+
+pub fn create_app(for_wasm: bool) -> App {
+    let window = if for_wasm {
+        Window {
+            title: "Grimble Running".into(),
+            resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
+            canvas: Some("#game-canvas".to_string()),
+            present_mode: PresentMode::AutoVsync,
+            ..default()
+        }
+    } else {
+        Window {
+            title: "Grimble Running".into(),
+            resolution: (WINDOW_WIDTH, WINDOW_HEIGHT).into(),
+            ..default()
+        }
+    };
+
+    let mut app = App::new();
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(window),
+        ..default()
+    }))
+    .insert_resource(ObstacleTimer(Timer::new(
+        Duration::from_secs(1),
+        TimerMode::Repeating,
+    )))
+    .insert_resource(GameState::new())
+    .add_systems(Startup, setup)
+    .add_systems(
+        Update,
+        (
+            tick_game_state,
+            apply_gravity,
+            move_grimble,
+            toggle_start_button,
+            toggle_restart_button,
+            handle_input,
+            handle_button_interactions,
+            button_visual_feedback,
+            spawn_obstacles,
+            move_obstacles,
+            check_collisions,
+            update_score,
+            update_speed,
+        ),
+    );
+    app
 }
