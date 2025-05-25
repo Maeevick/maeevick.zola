@@ -5,15 +5,13 @@
 
 _An arcano-technological contraption to gently tease our dear Library Assistant on his non-anniversary_
 
----
-
 ## 📚 The Origin Story
 
-Well, well, well... You know how our beloved Grimble gets when he's organizing books? All that meticulous jumping from shelf to shelf, dodging falling tomes and avoiding the occasional explosion from my latest experiments?
+Well, well, well... You know how our beloved Grimble gets when he's organizing books? All that meticulous jumping from shelf to shelf, dodging falling tomes and avoiding explosions?
 
 I thought: "What if we could recreate this thrilling daily routine in a more... controlled environment?"
 
-So here we are! Grimble Running - a delightfully simple jumping game that perfectly captures our favorite goblin's extraordinary talent for avoiding obstacles (mostly the Trix's fault, to be honest) while going about his very serious book-sorting business.
+So here we are! Grimble Running - a delightfully simple jumping game that perfectly captures our favorite goblin's extraordinary talent for avoiding obstacles (mostly the Trix's ones) while going about his very serious book-sorting business.
 
 _Note: No actual goblins were harmed in the making of this game. Though Grimble did mutter something about "unnecessary digital representations of perfectly normal library activities" when he saw it._
 
@@ -21,24 +19,19 @@ _Note 2: It's literally inspired by 'A Life of a Dinosaur in a Web' (Google Chro
 
 ## 🎮 Gameplay
 
-[Play Now on the Website!](https://www.maeevick.com/quests/grimble-running/)
+**The Goal:** Help Grimble navigate through his daily obstacle course cleaning his library. [Play Now on the Website!](https://www.maeevick.com/quests/grimble-running/)
 
-**The Goal:** Help Grimble navigate through his daily obstacle course cleaning his library.
+**Key points:**
 
-**Simple Controls**:
-I've kept the controls refreshingly simple because, let's face it, Grimble has enough complexity in his filing systems. No need to overwhelm the poor fellow with a 47-button gaming peripheral.
-
-- Press SPACE to jump over obstacles (just like dodging my failed contraptions!)
-- Press R to reset after gravity inevitably wins (also known as "restart after game over")
-
-**Progressive Difficulty**: The faster you go, the more it resembles a typical day in the lab
-
-**Score System**: Count how many obstacles you avoid (_Grimble's personal record is still classified_)
-
-**Current Limitations:**
-
-- Requires a keyboard (specifically the space key) - touch controls coming soon!
-- Mouse users are welcome to watch in supportive silence
+- **Simple Controls**:
+  I've kept the controls refreshingly simple because, let's face it, Grimble has enough complexity in his filing systems. No need to overwhelm the poor fellow with a 47-button gaming peripheral.
+  - Press SPACE or CLICK/TOUCH to jump over obstacles _(just like dodging my brain distractions!)_
+- **Progressive Difficulty**: The faster you go, the more it resembles a typical day in the library
+  - More Chaos to come later _(exact release date: "undefined")_
+- **Score System**: Count how many obstacles you avoid (_Grimble's personal record is still classified_)
+  - Local persistance of your Highest Scores _(maybe)_ soon
+- **Current Limitations:**
+  - Rigid size not responsive at all _(turn your narrow mobile screen to landscape and aim right to center the game)_
 
 ## 🛠️ Technical Sorcery
 
@@ -116,6 +109,7 @@ grimble-running/
 
 - [x] Grimble _(a sophisticated gray square)_
 - [x] Obstacles _(equally sophisticated gray - not the same - rectangles)_
+- [x] Keyboard and Touch controls _(for desktop and mobile goblin management)_
 - [x] Gravity simulation _(because physics matters!)_
 - [x] Score tracking _(for competitive party organizing)_
 - [x] Progressive speed increase _(like a day getting progressively more chaotic)_
@@ -126,7 +120,6 @@ grimble-running/
 ### 🎯 Future Improvements
 
 - [ ] More sophisticated sprites _(maybe Grimble could look like... a slightly better gray square?)_
-- [ ] Touch controls _(for mobile goblin management)_
 - [ ] Sound effects _(the gentle **thud** of books being properly shelved)_
 - [ ] Background scenery _(the Great Library, obviously...or not)_
 - [ ] Different obstacle types _(flying books, unstable experiments, etc.)_
