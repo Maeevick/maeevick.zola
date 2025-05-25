@@ -1,7 +1,7 @@
 +++
 title = "Grimble Running"
 description = "Un jeu de plateforme simple inspiré de notre assistant de bibliothèque préféré (ou d'un T-Rex)"
-date = 2025-05-19
+date = 2025-05-20
 [extra]
 locale = "fr_FR"
 +++
@@ -14,14 +14,14 @@ Construit avec **Rust** et **Bevy Engine**, puis transmué en **WebAssembly** po
 
 ## Jouer maintenant
 
-**Contrôles** : il n'y a pas plus simple ! **ESPACE** : Sauter par-dessus les obstacles | **R** : Recommencer après un Game Over.
+**Contrôles** : Il n'y a pas plus simple ! **ESPACE** ou **CLICK/TOUCH** : Sauter par-dessus les obstacles
 
 <div id="game-container" class="game-container">
   <button id="load-game-btn" class="load-game-btn">▶ Jouer à Grimble Running</button>
   <div id="game-frame" style="display: none;">
     <iframe
       id="game-iframe" 
-      style="width: 600px; height: 200px; border:1px solid  ;"
+      style="width: 600px; height: 200px; border:1px solid black;"
       title="Grimble Running"
       loading="lazy"
       allow="autoplay"

@@ -1,7 +1,7 @@
 +++
 title = "Grimble Running"
 description = "A simple platformer game inspired by our favorite library assistant (or a T-Rex)"
-date = 2025-05-19
+date = 2025-05-20
 [extra]
 locale = "en_US"
 +++
@@ -14,7 +14,7 @@ Built with **Rust** and **Bevy Engine**, then transmuted into **WebAssembly** to
 
 ## Play Now
 
-**Controls**: It couldn't be simpler! **SPACE**: Jump over obstacles | **R**: Restart after Game Over
+**Controls**: It couldn't be simpler! **SPACE** or **CLICK/TOUCH**: Jump over obstacles
 
 <div id="game-container" class="game-container">
   <button id="load-game-btn" class="load-game-btn">▶ Play Grimble Running</button>
