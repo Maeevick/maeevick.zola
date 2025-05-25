@@ -2280,7 +2280,7 @@ checksum = "36119f3a540b086b4e436bb2b588cf98a68863470e0e880f4d0842f112a3183a"
 
 [[package]]
 name = "grimble-running"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bevy",
  "console_error_panic_hook",
