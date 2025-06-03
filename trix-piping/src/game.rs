@@ -21,6 +21,9 @@ pub struct ExitButton;
 pub struct WelcomeUI;
 
 #[derive(Component)]
+pub struct PlayingUI;
+
+#[derive(Component)]
 pub struct ScoresUI;
 
 fn hello_world() {
@@ -118,7 +121,7 @@ fn cleanup_welcome_ui(mut commands: Commands, welcome_ui: Query<Entity, With<Wel
     }
 }
 
-fn handle_welcome_button_interactions(
+fn handle_menu_button_interactions(
     mut next_state: ResMut<NextState<GameState>>,
     start_button_query: Query<&Interaction, (Changed<Interaction>, With<StartButton>)>,
     scores_button_query: Query<&Interaction, (Changed<Interaction>, With<ScoresButton>)>,
@@ -138,6 +141,54 @@ fn handle_welcome_button_interactions(
             next_state.set(GameState::Scores);
             println!("Score Button Pressed: GameState is {:?}", GameState::Scores);
         }
+    }
+}
+
+fn setup_playing_ui(mut commands: Commands) {
+    commands
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                ..default()
+            },
+            PlayingUI,
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        position_type: PositionType::Absolute,
+                        top: Val::Px(20.0),
+                        right: Val::Px(20.0),
+                        width: Val::Px(100.0),
+                        height: Val::Px(50.0),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    BackgroundColor(Color::linear_rgb(0.2, 0.2, 0.2)),
+                    BorderColor(Color::WHITE),
+                    BorderRadius::all(Val::Px(8.0)),
+                    ExitButton,
+                ))
+                .with_children(|button| {
+                    button.spawn((
+                        Text::new("EXIT"),
+                        TextFont {
+                            font_size: 24.0,
+                            ..default()
+                        },
+                        TextColor(Color::WHITE),
+                    ));
+                });
+        });
+}
+
+fn cleanup_playing_ui(mut commands: Commands, playing_ui: Query<Entity, With<PlayingUI>>) {
+    for entity in playing_ui.iter() {
+        commands.entity(entity).despawn();
     }
 }
 
@@ -225,7 +276,7 @@ fn cleanup_scores_ui(mut commands: Commands, scores_ui: Query<Entity, With<Score
     }
 }
 
-fn handle_scores_button_interactions(
+fn handle_exit_button_interactions(
     mut next_state: ResMut<NextState<GameState>>,
     exit_button_query: Query<&Interaction, (Changed<Interaction>, With<ExitButton>)>,
 ) {
@@ -260,16 +311,22 @@ pub fn create_app(for_wasm: bool) -> App {
     .init_state::<GameState>()
     .add_systems(Startup, (hello_world, setup_camera))
     .add_systems(OnEnter(GameState::Welcome), setup_welcome_ui)
+    .add_systems(OnEnter(GameState::Playing), setup_playing_ui)
     .add_systems(OnEnter(GameState::Scores), setup_scores_ui)
     .add_systems(OnExit(GameState::Welcome), cleanup_welcome_ui)
+    .add_systems(OnExit(GameState::Playing), cleanup_playing_ui)
     .add_systems(OnExit(GameState::Scores), cleanup_scores_ui)
     .add_systems(
         Update,
-        handle_welcome_button_interactions.run_if(in_state(GameState::Welcome)),
+        handle_menu_button_interactions.run_if(in_state(GameState::Welcome)),
     )
     .add_systems(
         Update,
-        handle_scores_button_interactions.run_if(in_state(GameState::Scores)),
+        handle_exit_button_interactions.run_if(in_state(GameState::Playing)),
+    )
+    .add_systems(
+        Update,
+        handle_exit_button_interactions.run_if(in_state(GameState::Scores)),
     );
     app
 }
